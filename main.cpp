@@ -26,7 +26,7 @@
 
 int obj_length;
 GLuint obj_vao, obj_vbo;
-GLuint lightingShaderProgram;
+GLuint blankShaderProgram;
 
 float backdrop_vert[] = {
 //  Position             Texture       Normal
@@ -54,11 +54,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
-void update() {
-    glm::vec3 lighting = glm::vec3( 0.5f, 2.0f, 2.0f);
+void update(glm::vec3 camera, glm::vec3 target) {
     glm::mat4 view     = glm::lookAt(
-                      glm::vec3( 0.5f,  2.0f,  0.5f),
-                      glm::vec3( 0.5f,  0.0f,  0.5f),
+                      camera,
+                      target,
                       glm::vec3( 0.0f,  0.0f,  1.0f)
                     );
     glm::mat4 proj = 
@@ -75,17 +74,15 @@ void update() {
     
     // Draw Object
     glm::mat4 model = glm::mat4();
-    model = glm::translate(model, glm::vec3(0.5f, 0.5f, 0.0f));
-    model = glm::scale(model, glm::vec3(0.6f));
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(1.0f));
     
-    glUseProgram(lightingShaderProgram);
-    glUniform3fv(glGetUniformLocation(lightingShaderProgram, "lighting"),
-                                  1, glm::value_ptr(lighting));
-    glUniformMatrix4fv(glGetUniformLocation(lightingShaderProgram, "view"),
+    glUseProgram(blankShaderProgram);
+    glUniformMatrix4fv(glGetUniformLocation(blankShaderProgram, "view"),
             1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(lightingShaderProgram, "proj"),
+    glUniformMatrix4fv(glGetUniformLocation(blankShaderProgram, "proj"),
             1, GL_FALSE, glm::value_ptr(proj));
-    glUniformMatrix4fv(glGetUniformLocation(lightingShaderProgram, "model"),
+    glUniformMatrix4fv(glGetUniformLocation(blankShaderProgram, "model"),
             1, GL_FALSE, glm::value_ptr(model));
     
     glBindVertexArray(obj_vao);
@@ -130,7 +127,7 @@ int main( int argc, char *argv[] ) {
     if(argc >= 2) {
       loadOBJ(argv[1], obj_vertices);
     } else {
-      loadOBJ("h2g2coin.obj", obj_vertices);
+      loadOBJ("bb8.obj", obj_vertices);
     }
     glBufferData(GL_ARRAY_BUFFER, obj_vertices.size() * sizeof(Vert<float, 8>),
                                   &obj_vertices[0], GL_STATIC_DRAW);
@@ -142,26 +139,26 @@ int main( int argc, char *argv[] ) {
       SOIL_load_image("tex.png", &obj_tex_width, &obj_tex_height, 0, SOIL_LOAD_RGB);
 
 
-    // Make Object 0 shader program.
-    makeShader(SHADER_VERT3D, SHADER_FRAG_LIGHTING, lightingShaderProgram);
-    
+    // Make Object shader program.
+    makeShader(SHADER_VERT3D, SHADER_FRAG_SIMPLE, blankShaderProgram);
+
     glBindVertexArray(obj_vao);
     glBindBuffer(GL_ARRAY_BUFFER, obj_vbo);
 
-    GLint pvpAttrib = glGetAttribLocation(lightingShaderProgram, "position");
-    glEnableVertexAttribArray(pvpAttrib);
-    glVertexAttribPointer(pvpAttrib, 3, GL_FLOAT, GL_FALSE,
-                 8*sizeof(float), 0);
+    GLint bvpAttrib = glGetAttribLocation(blankShaderProgram, "position");
+    glEnableVertexAttribArray(bvpAttrib);
+    glVertexAttribPointer(bvpAttrib, 3, GL_FLOAT, GL_FALSE,
+               8*sizeof(float), 0);
 
-    GLint pvcAttrib = glGetAttribLocation(lightingShaderProgram, "texcoord");
-    glEnableVertexAttribArray(pvcAttrib);
-    glVertexAttribPointer(pvcAttrib, 2, GL_FLOAT, GL_FALSE,
-                 8*sizeof(float), (void*)(3*sizeof(float)));
+    GLint bvtAttrib = glGetAttribLocation(blankShaderProgram, "texcoord");
+    glEnableVertexAttribArray(bvtAttrib);
+    glVertexAttribPointer(bvtAttrib, 2, GL_FLOAT, GL_FALSE,
+               8*sizeof(float), (void*)(3*sizeof(float)));
 
-    GLint pvnAttrib = glGetAttribLocation(lightingShaderProgram, "normal");
-    glEnableVertexAttribArray(pvnAttrib);
-    glVertexAttribPointer(pvnAttrib, 3, GL_FLOAT, GL_FALSE,
-                 8*sizeof(float), (void*)(5*sizeof(float)));
+    GLint bvnAttrib = glGetAttribLocation(blankShaderProgram, "normal");
+    glEnableVertexAttribArray(bvnAttrib);
+    glVertexAttribPointer(bvnAttrib, 3, GL_FLOAT, GL_FALSE,
+               8*sizeof(float), (void*)(5*sizeof(float)));
 
     // Create texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -189,13 +186,24 @@ int main( int argc, char *argv[] ) {
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        //Display
-        update();
+        //Display Views
+        glViewport(0, 0, WIDTH/2, HEIGHT/2);
+        update(glm::vec3(-2.0f, -2.0f,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+
+        glViewport(WIDTH/2, 0, WIDTH/2, HEIGHT/2);
+        update(glm::vec3( 2.0f, -2.0f,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+
+        glViewport(0, HEIGHT/2, WIDTH/2, HEIGHT/2);
+        update(glm::vec3(-2.0f,  2.0f,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+
+        glViewport(WIDTH/2, HEIGHT/2, WIDTH/2, HEIGHT/2);
+        update(glm::vec3( 2.0f,  2.0f,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+
         glfwSwapBuffers(window);
     }
 
     // --- Cleanup/Shutdown ---
-    glDeleteProgram(lightingShaderProgram);
+    glDeleteProgram(blankShaderProgram);
     
     glDeleteBuffers(1, &obj_vbo);
     glDeleteVertexArrays(1, &obj_vao);
