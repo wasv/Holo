@@ -19,14 +19,19 @@
 #include "verts.hpp"
 #include "shaders.h"
 
-#define STATIC_IMAGES
-
+#define RADIUS 2.0f
 #define WIDTH 1024
 #define HEIGHT 768
 
+#define PI 3.14159265
+
 int obj_length;
+int xAngle = 0;
+bool fullscreen = false;
+
 GLuint obj_vao, obj_vbo;
 GLuint blankShaderProgram;
+GLFWwindow* window;
 
 float backdrop_vert[] = {
 //  Position             Texture       Normal
@@ -39,7 +44,7 @@ float backdrop_vert[] = {
      0.0f, 1.0f, 0.0f,   0.0f, 1.0f,   0.0f, 0.0f, 1.0f,  // Top Left
 };
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void key_callback(GLFWwindow* localwindow, int key, int scancode, int action, int mods)
 {
     if(action == GLFW_PRESS ){
       if(key == GLFW_KEY_W) { 
@@ -50,18 +55,26 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
                 SOIL_SAVE_TYPE_BMP,
                 0, 0, WIDTH, HEIGHT
         );
+      } else if(key == GLFW_KEY_K) {
+        xAngle += 15;
+      } else if(key == GLFW_KEY_J) {
+        xAngle -= 15;
+      } else if ( key == GLFW_KEY_ESCAPE ) {
+        exit(0);
       }
     }
 }
 
 void update(glm::vec3 camera, glm::vec3 target) {
-    glm::mat4 view     = glm::lookAt(
+    glm::mat4 view = glm::lookAt(
                       camera,
                       target,
                       glm::vec3( 0.0f,  0.0f,  1.0f)
                     );
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
     glm::mat4 proj = 
-      glm::perspective(glm::radians(45.0f), (float)WIDTH / HEIGHT, 1.0f, 10.0f);
+      glm::perspective(glm::radians(45.0f), (float)width / height, 1.0f, 10.0f);
     
     
     // Move camera
@@ -101,8 +114,16 @@ int main( int argc, char *argv[] ) {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // --- Create window ---
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT,
-                                      "OpenGL", nullptr, nullptr); // Windowed
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+    window = glfwCreateWindow(mode->width, mode->height,
+                              "OpenGL", glfwGetPrimaryMonitor() , nullptr); // Windowed
     if(window == NULL) return 2;
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, key_callback);
@@ -177,8 +198,7 @@ int main( int argc, char *argv[] ) {
     glEnableClientState(GL_VERTEX_ARRAY);
     
     // --- Main Loop ---
-    while(!glfwWindowShouldClose(window))
-    {
+    while(!glfwWindowShouldClose(window)) {
         // Check for Keypress
         glfwPollEvents();
 
@@ -186,18 +206,21 @@ int main( int argc, char *argv[] ) {
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
         //Display Views
-        glViewport(0, 0, WIDTH/2, HEIGHT/2);
-        update(glm::vec3(-2.0f, -2.0f,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+        glViewport(0, 0, width/2, height/2);
+        update(glm::vec3(cos((xAngle+  0)*PI/180)*RADIUS, sin((xAngle+  0)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
 
-        glViewport(WIDTH/2, 0, WIDTH/2, HEIGHT/2);
-        update(glm::vec3( 2.0f, -2.0f,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+        glViewport(width/2, 0, width/2, height/2);
+        update(glm::vec3(cos((xAngle+ 90)*PI/180)*RADIUS, sin((xAngle+ 90)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
 
-        glViewport(0, HEIGHT/2, WIDTH/2, HEIGHT/2);
-        update(glm::vec3(-2.0f,  2.0f,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+        glViewport(0, height/2, width/2, height/2);
+        update(glm::vec3(cos((xAngle+180)*PI/180)*RADIUS, sin((xAngle+180)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
 
-        glViewport(WIDTH/2, HEIGHT/2, WIDTH/2, HEIGHT/2);
-        update(glm::vec3( 2.0f,  2.0f,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+        glViewport(width/2, height/2, width/2, height/2);
+        update(glm::vec3(cos((xAngle+270)*PI/180)*RADIUS, sin((xAngle+270)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
 
         glfwSwapBuffers(window);
     }
