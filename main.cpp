@@ -48,12 +48,14 @@ void key_callback(GLFWwindow* localwindow, int key, int scancode, int action, in
 {
     if(action == GLFW_PRESS ){
       if(key == GLFW_KEY_W) { 
-        char filename[] = "out.bmp";
+        char filename[] = "out.bmp";        
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
         SOIL_save_screenshot
         (
                 filename,
                 SOIL_SAVE_TYPE_BMP,
-                0, 0, WIDTH, HEIGHT
+                0, 0, width, height
         );
       } else if(key == GLFW_KEY_K) {
         xAngle += 15;
@@ -65,31 +67,12 @@ void key_callback(GLFWwindow* localwindow, int key, int scancode, int action, in
     }
 }
 
-void update(glm::vec3 camera, glm::vec3 target, glm::vec3 up) {
-    glm::mat4 view = glm::lookAt(
-                      camera,
-                      target,
-                      up
-                    );
+void update(glm::mat4 view, glm::mat4 proj, glm::mat4 model) {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
-    glm::mat4 proj = 
-      glm::perspective(glm::radians(45.0f), (float)width / height, 1.0f, 10.0f);
     
     
-    // Move camera
-    //GLfloat radius = 2.0f;
-    //GLfloat camX = sin(glfwGetTime()) * radius;
-    //GLfloat camY = cos(glfwGetTime()) * radius;
-    //view = glm::lookAt(glm::vec3(camX,camY,1.5f),
-    //        glm::vec3(0.0f, 0.0f, 0.0f),
-    //        glm::vec3(0.0f, 0.0f, 1.0f));
-    
-    // Draw Object
-    glm::mat4 model = glm::mat4();
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(1.0f));
-    
+    // Setup Shader
     glUseProgram(blankShaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(blankShaderProgram, "view"),
             1, GL_FALSE, glm::value_ptr(view));
@@ -98,6 +81,7 @@ void update(glm::vec3 camera, glm::vec3 target, glm::vec3 up) {
     glUniformMatrix4fv(glGetUniformLocation(blankShaderProgram, "model"),
             1, GL_FALSE, glm::value_ptr(model));
     
+    // Draw Object
     glBindVertexArray(obj_vao);
       glDrawArrays(GL_TRIANGLES, 0, obj_length);
     glBindVertexArray(0);
@@ -210,21 +194,46 @@ int main( int argc, char *argv[] ) {
         glfwGetWindowSize(window, &width, &height);
 
         //Display Views
-        // Bottom View
-        glViewport(  width/3,          0, width/3, height/3);
-        update(glm::vec3(cos((xAngle+  0)*PI/180)*RADIUS, sin((xAngle+  0)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f), glm::vec3( 0.0f,  0.0f, -1.0f));
+        glm::mat4 proj = 
+          glm::perspective(glm::radians(45.0f), (float)width / height, 1.0f, 10.0f);
 
-        // Left View
-        glViewport(        0,   height/3, width/3, height/3);
-        update(glm::vec3(cos((xAngle+ 90)*PI/180)*RADIUS, sin((xAngle+ 90)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f), glm::vec3( 0.0f,  0.0f, -1.0f));
+        glm::mat4 model = glm::mat4();
+    
+        // Up View
+        glViewport(  width/3, 2*height/3, width/3, height/3);
+        glm::mat4 view = glm::lookAt(
+                          glm::vec3(cos((xAngle+  0)*PI/180)*RADIUS, sin((xAngle+  0)*PI/180)*RADIUS,  1.0f),
+                          glm::vec3( 0.0f,  0.0f,  0.5f),
+                          glm::vec3( 0.0f,  0.0f, 1.0f)
+                        );
+        update(view, proj, model);
 
         // Right View
         glViewport(2*width/3,   height/3, width/3, height/3);
-        update(glm::vec3(cos((xAngle+180)*PI/180)*RADIUS, sin((xAngle+180)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f), glm::vec3( 0.0f,  0.0f,  1.0f));
+        view = glm::lookAt(
+                          glm::vec3(cos((xAngle+ 90)*PI/180)*RADIUS, sin((xAngle+ 90)*PI/180)*RADIUS,  1.0f),
+                          glm::vec3( 0.0f,  0.0f,  0.5f),
+                          glm::vec3( 0.0f,  0.0f, 1.0f)
+                        );
+        update(view, proj, model);
 
-        // Up View
-        glViewport(  width/3, 2*height/3, width/3, height/3);
-        update(glm::vec3(cos((xAngle+270)*PI/180)*RADIUS, sin((xAngle+270)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f), glm::vec3( 0.0f,  0.0f,  1.0f));
+        // Bottom View
+        glViewport(  width/3,          0, width/3, height/3);
+        view = glm::lookAt(
+                          glm::vec3(cos((xAngle+180)*PI/180)*RADIUS, sin((xAngle+180)*PI/180)*RADIUS,  1.0f),
+                          glm::vec3( 0.0f,  0.0f,  0.5f),
+                          glm::vec3( 0.0f,  0.0f, 1.0f)
+                        );
+        update(view, proj, model);
+
+        // Left View
+        glViewport(        0,   height/3, width/3, height/3);
+        view = glm::lookAt(
+                          glm::vec3(cos((xAngle+270)*PI/180)*RADIUS, sin((xAngle+270)*PI/180)*RADIUS,  1.0f),
+                          glm::vec3( 0.0f,  0.0f,  0.5f),
+                          glm::vec3( 0.0f,  0.0f, 1.0f)
+                        );
+        update(view, proj, model);
 
         glfwSwapBuffers(window);
     }
