@@ -47,6 +47,7 @@ float backdrop_vert[] = {
 void key_callback(GLFWwindow* localwindow, int key, int scancode, int action, int mods)
 {
     if(action == GLFW_PRESS ){
+      // w - Screenshot
       if(key == GLFW_KEY_W) { 
         char filename[] = "out.bmp";        
         int width, height;
@@ -57,12 +58,15 @@ void key_callback(GLFWwindow* localwindow, int key, int scancode, int action, in
                 SOIL_SAVE_TYPE_BMP,
                 0, 0, width, height
         );
+      // k - Increase object xRotation
       } else if(key == GLFW_KEY_K) {
         xAngle += 15;
         xAngle = xAngle > 360 ? xAngle - 360 : xAngle;
+      // j - Decrease object yRotation
       } else if(key == GLFW_KEY_J) {
         xAngle -= 15;
         xAngle = xAngle < 0 ? 360 - xAngle : xAngle;
+      // ESC - Exit program
       } else if ( key == GLFW_KEY_ESCAPE ) {
         exit(0);
       }
@@ -70,10 +74,6 @@ void key_callback(GLFWwindow* localwindow, int key, int scancode, int action, in
 }
 
 void update(glm::mat4 view, glm::mat4 proj, glm::mat4 model) {
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-    
-    
     // Setup Shader
     glUseProgram(blankShaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(blankShaderProgram, "view"),
@@ -196,6 +196,12 @@ int main( int argc, char *argv[] ) {
         glfwGetWindowSize(window, &width, &height);
 
         //Display Views
+        // Screen Layout:
+        //   -----
+        //  |  T  |
+        //  | L R |
+        //  |  B  |
+        //   -----
         glm::mat4 proj = 
           glm::perspective(glm::radians(45.0f), 1.0f, 1.0f, 10.0f);
         glm::mat4 model = glm::rotate(glm::mat4(), (GLfloat)(xAngle*PI/180),glm::vec3(0.0f,0.0f,1.0f));
