@@ -65,11 +65,11 @@ void key_callback(GLFWwindow* localwindow, int key, int scancode, int action, in
     }
 }
 
-void update(glm::vec3 camera, glm::vec3 target) {
+void update(glm::vec3 camera, glm::vec3 target, glm::vec3 up) {
     glm::mat4 view = glm::lookAt(
                       camera,
                       target,
-                      glm::vec3( 0.0f,  0.0f,  1.0f)
+                      up
                     );
     int width, height;
     glfwGetWindowSize(window, &width, &height);
@@ -210,17 +210,21 @@ int main( int argc, char *argv[] ) {
         glfwGetWindowSize(window, &width, &height);
 
         //Display Views
-        glViewport(0, 0, width/2, height/2);
-        update(glm::vec3(cos((xAngle+  0)*PI/180)*RADIUS, sin((xAngle+  0)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+        // Bottom View
+        glViewport(  width/3,          0, width/3, height/3);
+        update(glm::vec3(cos((xAngle+  0)*PI/180)*RADIUS, sin((xAngle+  0)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f), glm::vec3( 0.0f,  0.0f, -1.0f));
 
-        glViewport(width/2, 0, width/2, height/2);
-        update(glm::vec3(cos((xAngle+ 90)*PI/180)*RADIUS, sin((xAngle+ 90)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+        // Left View
+        glViewport(        0,   height/3, width/3, height/3);
+        update(glm::vec3(cos((xAngle+ 90)*PI/180)*RADIUS, sin((xAngle+ 90)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f), glm::vec3( 0.0f,  0.0f, -1.0f));
 
-        glViewport(0, height/2, width/2, height/2);
-        update(glm::vec3(cos((xAngle+180)*PI/180)*RADIUS, sin((xAngle+180)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+        // Right View
+        glViewport(2*width/3,   height/3, width/3, height/3);
+        update(glm::vec3(cos((xAngle+180)*PI/180)*RADIUS, sin((xAngle+180)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f), glm::vec3( 0.0f,  0.0f,  1.0f));
 
-        glViewport(width/2, height/2, width/2, height/2);
-        update(glm::vec3(cos((xAngle+270)*PI/180)*RADIUS, sin((xAngle+270)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f));
+        // Up View
+        glViewport(  width/3, 2*height/3, width/3, height/3);
+        update(glm::vec3(cos((xAngle+270)*PI/180)*RADIUS, sin((xAngle+270)*PI/180)*RADIUS,  1.0f), glm::vec3( 0.0f,  0.0f,  0.5f), glm::vec3( 0.0f,  0.0f,  1.0f));
 
         glfwSwapBuffers(window);
     }
