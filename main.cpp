@@ -19,7 +19,6 @@
 #include "verts.hpp"
 #include "shaders.h"
 
-#define RADIUS 2.5f
 #define WIDTH 1024
 #define HEIGHT 768
 
@@ -27,9 +26,8 @@
 
 int obj_length;
 float xAngle = 0.0f;
-float yAngle = 90.0f;
-float radius = 2.0f;
-bool fullscreen = false;
+float yAngle = 0.0f;
+float radius = 3.0f;
 
 GLuint obj_vao, obj_vbo;
 GLuint blankShaderProgram;
@@ -68,14 +66,6 @@ void key_callback(GLFWwindow* localwindow, int key, int scancode, int action, in
       } else if(key == GLFW_KEY_J) {
         xAngle -= 15.0f;
         xAngle = xAngle < 0 ? 360 - xAngle : xAngle;
-      // i - Increase object yRotation
-      } else if(key == GLFW_KEY_I) {
-        yAngle += 15.0f;
-        yAngle = yAngle > 360 ? yAngle - 360 : yAngle;
-      // u - Decrease object yRotation
-      } else if(key == GLFW_KEY_U) {
-        yAngle -= 15.0f;
-        yAngle = yAngle < 0 ? 360 - yAngle : yAngle;
       // s - Decrease object distance 
       } else if(key == GLFW_KEY_S) {
         radius -= 0.5f;
@@ -156,6 +146,14 @@ int main( int argc, char *argv[] ) {
     }
     glBufferData(GL_ARRAY_BUFFER, obj_vertices.size() * sizeof(Vert<float, 8>),
                                   &obj_vertices[0], GL_STATIC_DRAW);
+
+    Vert<float, 8> max;
+    maximum(obj_vertices, max);
+    Vert<float, 8> min;
+    minimum(obj_vertices, min);
+    
+    float dim[3] = {max[0]-min[0], max[1]-min[1], max[2]-min[2]};
+    
     obj_length = obj_vertices.size();
 
     // Read Object 0 texture
@@ -207,7 +205,7 @@ int main( int argc, char *argv[] ) {
         glfwPollEvents();
 
         // Reset
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         int width, height;
@@ -221,51 +219,41 @@ int main( int argc, char *argv[] ) {
         //  |  B  |
         //   -----
         glm::mat4 proj = 
-          glm::perspective(glm::radians(45.0f), 1.0f, 1.0f, 20.0f);
-        glm::mat4 model = glm::rotate(glm::mat4(), (GLfloat)(xAngle*PI/180),glm::vec3(0.0f,0.0f,1.0f));
-        model = glm::rotate(model, (GLfloat)(yAngle*PI/180),glm::vec3(0.0f,1.0f,0.0f));
-        glm::mat4 view  = glm::mat4();
+          glm::perspective(glm::radians(45.0f), 1.0f, 0.5f, 20.0f);
+        glm::mat4 model = glm::mat4();
+        model = glm::translate(model, glm::vec3(-(min[0]+(dim[0]/2.0f)),-(min[1]+(dim[1]/2.0f)),-(min[2]+(dim[2]/2.0f))));
+        model = glm::scale(model, glm::vec3(1.0f/dim[0],1.0f/dim[1],1.0f/dim[2]));
+        model = glm::rotate(model, (GLfloat)(xAngle*PI/180),glm::vec3(0.0f,0.0f,1.0f));
+        //model = glm::rotate(model, (GLfloat)(yAngle*PI/180),glm::vec3(0.0f,1.0f,0.0f));
+        glm::mat4 view = glm::lookAt(
+                          glm::vec3(radius, 0.0f, 0.0f),
+                          glm::vec3( 0.0f,  0.0f, 0.0f),
+                          glm::vec3( 0.0f,  0.0f, 1.0f)
+                        );
         
         // Top View
         glViewport(((width-height)/2)+(height/3), 2*height/3, height/3, height/3);
-        view = glm::lookAt(
-                          glm::vec3(radius,  0.0f, 1.0f),
-                          glm::vec3( 0.0f,  0.0f, 0.5f),
-                          glm::vec3( 0.0f,  0.0f, 1.0f)
-                        );
         update(view, proj, model);
 
         // Left View
-        glViewport(((width-height)/2), height/3, height/3, height/3);
-        view = glm::lookAt(
-                          glm::vec3(radius, -1.0f, 0.0f),
-                          glm::vec3( 0.0f, -0.5f, 0.0f),
-                          glm::vec3( 0.0f,  0.0f, 1.0f)
-                        );
         view = glm::rotate(view, (GLfloat)(90.0f*PI/180),glm::normalize(glm::vec3(1.0f,0.0f,0.0f)));
         model = glm::rotate(model, (GLfloat)(90.0f*PI/180),glm::vec3(0.0f,0.0f,1.0f));
+
+        glViewport(((width-height)/2), height/3, height/3, height/3);
         update(view, proj, model);
 
         // Bottom View
-        glViewport(((width-height)/2)+(height/3), 0, height/3, height/3);
-        view = glm::lookAt(
-                          glm::vec3(radius,  0.0f,-1.0f),
-                          glm::vec3( 0.0f,  0.0f,-0.5f),
-                          glm::vec3( 0.0f,  0.0f, 1.0f)
-                        );
-        view = glm::rotate(view, (GLfloat)(180.0f*PI/180),glm::normalize(glm::vec3(1.0f,0.0f,0.0f)));
+        view = glm::rotate(view, (GLfloat)(90.0f*PI/180),glm::normalize(glm::vec3(1.0f,0.0f,0.0f)));
         model = glm::rotate(model, (GLfloat)(90.0f*PI/180),glm::vec3(0.0f,0.0f,1.0f));
+
+        glViewport(((width-height)/2)+(height/3), 0, height/3, height/3);
         update(view, proj, model);
 
         // Right View
-        glViewport(((width-height)/2)+(2*(height/3)),   height/3, height/3, height/3);
-        view = glm::lookAt(
-                          glm::vec3(radius,  1.0f, 0.0f),
-                          glm::vec3( 0.0f,  0.5f, 0.0f),
-                          glm::vec3( 0.0f,  0.0f, 1.0f)
-                        );
-        view = glm::rotate(view, (GLfloat)(270.0f*PI/180),glm::normalize(glm::vec3(1.0f,0.0f,0.0f)));
+        view = glm::rotate(view, (GLfloat)(90.0f*PI/180),glm::normalize(glm::vec3(1.0f,0.0f,0.0f)));
         model = glm::rotate(model, (GLfloat)(90.0f*PI/180),glm::vec3(0.0f,0.0f,1.0f));
+
+        glViewport(((width-height)/2)+(2*(height/3)), height/3, height/3, height/3);
         update(view, proj, model);
 
         glfwSwapBuffers(window);
