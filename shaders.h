@@ -52,7 +52,7 @@
 "     vec3  LightColor  = vec3(1,1,1);\n"\
 "     float LightPower  = 5.0f;\n"\
 "     vec3  mtlDiffuse  = texture(tex, Texcoord).xyz;\n"\
-"     vec3  mtlAmbient  = vec3(0.1, 0.1, 0.1) * mtlDiffuse;\n"\
+"     vec3  mtlAmbient  = vec3(0.3, 0.3, 0.3) * mtlDiffuse;\n"\
 "     vec3  mtlSpecular = vec3(0.3, 0.3, 0.3);\n"\
 "     float distance    = length(lighting - Position_world);\n"\
 "     vec3  n           = normalize(Normal);\n"\

@@ -90,6 +90,9 @@ void update(glm::mat4 view, glm::mat4 proj, glm::mat4 model) {
             1, GL_FALSE, glm::value_ptr(proj));
     glUniformMatrix4fv(glGetUniformLocation(blankShaderProgram, "model"),
             1, GL_FALSE, glm::value_ptr(model));
+    glm::vec3 lighting = glm::vec3(radius*1.1,0.5,0.5);
+    glUniform3fv(glGetUniformLocation(blankShaderProgram, "lighting"),
+            1, glm::value_ptr(lighting));
     
     // Draw Object
     glBindVertexArray(obj_vao);
@@ -163,7 +166,7 @@ int main( int argc, char *argv[] ) {
 
 
     // Make Object shader program.
-    makeShader(SHADER_VERT3D, SHADER_FRAG_SIMPLE, blankShaderProgram);
+    makeShader(SHADER_VERT3D, SHADER_FRAG_LIGHTING, blankShaderProgram);
 
     glBindVertexArray(obj_vao);
     glBindBuffer(GL_ARRAY_BUFFER, obj_vbo);
