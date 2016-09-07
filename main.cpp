@@ -156,14 +156,35 @@ int main( int argc, char *argv[] ) {
     minimum(obj_vertices, min);
     
     float dim[3] = {max[0]-min[0], max[1]-min[1], max[2]-min[2]};
+    float center[3] = {(dim[0]/2)+min[0], (dim[1]/2)+min[1], (dim[2]/2)+min[2]};
+
+    float maxdim;
+    if(dim[0] > dim[1] && dim[0] > dim[2]) {
+      maxdim = dim[0];
+    } else if(dim[1] > dim[2]) {
+      maxdim = dim[1];
+    } else {
+      maxdim = dim[2];
+    }
+    
+    cout << max[0] << ',' << max[1] << ',' << max[2] << endl;
+    cout << min[0] << ',' << min[1] << ',' << min[2] << endl;
+    cout << dim[0] << ',' << dim[1] << ',' << dim[2] << endl;
+    cout << center[0] << ',' << center[1] << ',' << center[2] << endl;
+    cout << maxdim << endl;
     
     obj_length = obj_vertices.size();
 
     // Read Object 0 texture
     int obj_tex_width, obj_tex_height;
-    unsigned char* obj_texture =
-      SOIL_load_image("tex.png", &obj_tex_width, &obj_tex_height, 0, SOIL_LOAD_RGB);
-
+    unsigned char* obj_texture;
+    if(argc >= 3) {
+      obj_texture =
+        SOIL_load_image(argv[2], &obj_tex_width, &obj_tex_height, 0, SOIL_LOAD_RGB);
+    } else {
+      obj_texture =
+        SOIL_load_image("tex.png", &obj_tex_width, &obj_tex_height, 0, SOIL_LOAD_RGB);
+    }
 
     // Make Object shader program.
     makeShader(SHADER_VERT3D, SHADER_FRAG_LIGHTING, blankShaderProgram);
@@ -224,8 +245,8 @@ int main( int argc, char *argv[] ) {
         glm::mat4 proj = 
           glm::perspective(glm::radians(45.0f), 1.0f, 0.5f, 20.0f);
         glm::mat4 model = glm::mat4();
-        model = glm::translate(model, glm::vec3(-(min[0]+(dim[0]/2.0f)),-(min[1]+(dim[1]/2.0f)),-(min[2]+(dim[2]/2.0f))));
-        model = glm::scale(model, glm::vec3(1.0f/dim[0],1.0f/dim[1],1.0f/dim[2]));
+        model = glm::scale(model, glm::vec3(1.0f/maxdim,1.0f/maxdim,1.0f/maxdim));
+        model = glm::translate(model,glm::vec3(-center[0],-center[1],-center[2]));
         model = glm::rotate(model, (GLfloat)(xAngle*PI/180),glm::vec3(0.0f,0.0f,1.0f));
         //model = glm::rotate(model, (GLfloat)(yAngle*PI/180),glm::vec3(0.0f,1.0f,0.0f));
         glm::mat4 view = glm::lookAt(
