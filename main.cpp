@@ -176,15 +176,15 @@ int main( int argc, char *argv[] ) {
     obj_length = obj_vertices.size();
 
     // Read Object 0 texture
-    int obj_tex_width, obj_tex_height;
-    unsigned char* obj_texture;
-    if(argc >= 3) {
-      obj_texture =
-        SOIL_load_image(argv[2], &obj_tex_width, &obj_tex_height, 0, SOIL_LOAD_RGB);
-    } else {
-      obj_texture =
-        SOIL_load_image("tex.png", &obj_tex_width, &obj_tex_height, 0, SOIL_LOAD_RGB);
-    }
+//    int obj_tex_width, obj_tex_height;
+//    unsigned char* obj_texture;
+//    if(argc >= 3) {
+//      obj_texture =
+//        SOIL_load_image(argv[2], &obj_tex_width, &obj_tex_height, 0, SOIL_LOAD_RGB);
+//    } else {
+//      obj_texture =
+//        SOIL_load_image("tex.png", &obj_tex_width, &obj_tex_height, 0, SOIL_LOAD_RGB);
+//    }
 
     // Make Object shader program.
     makeShader(SHADER_VERT3D, SHADER_FRAG_LIGHTING, blankShaderProgram);
@@ -208,16 +208,16 @@ int main( int argc, char *argv[] ) {
                8*sizeof(float), (void*)(5*sizeof(float)));
 
     // Create texture
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glGenerateMipmap(GL_TEXTURE_2D);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                  obj_tex_width, obj_tex_height, 0, GL_RGB,
-                  GL_UNSIGNED_BYTE, obj_texture);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+    //              obj_tex_width, obj_tex_height, 0, GL_RGB,
+    //              GL_UNSIGNED_BYTE, obj_texture);
+    //glGenerateMipmap(GL_TEXTURE_2D);
 
 
     glEnable(GL_DEPTH_TEST);
