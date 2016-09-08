@@ -247,7 +247,7 @@ int main( int argc, char *argv[] ) {
         glm::mat4 model = glm::mat4();
         model = glm::scale(model, glm::vec3(1.0f/maxdim,1.0f/maxdim,1.0f/maxdim));
         model = glm::translate(model,glm::vec3(-center[0],-center[1],-center[2]));
-        model = glm::rotate(model, (GLfloat)(xAngle*PI/180),glm::vec3(0.0f,0.0f,1.0f));
+        model = glm::rotate(model, (GLfloat)fmod((glfwGetTime()),2.0f*PI),glm::vec3(0.0f,0.0f,1.0f));
         //model = glm::rotate(model, (GLfloat)(yAngle*PI/180),glm::vec3(0.0f,1.0f,0.0f));
         glm::mat4 view = glm::lookAt(
                           glm::vec3(radius, 0.0f, 0.0f),
