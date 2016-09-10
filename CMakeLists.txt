@@ -13,4 +13,4 @@ configure_file("h2g2coin.obj" "Debug/h2g2coin.obj" COPYONLY)
 configure_file("tex.png" "Debug/tex.png" COPYONLY)
 
 add_executable(holo main.cpp)
-target_link_libraries(holo glfw3 ${OPENGL_LIBRARY} glew32s libglew32 SOIL)
+target_link_libraries(holo glfw ${OPENGL_LIBRARY} GLEW SOIL)

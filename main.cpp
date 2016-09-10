@@ -1,5 +1,5 @@
 #include <GL/glew.h>
-#include <gl/GL.h>
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <SOIL/SOIL.h>
 
