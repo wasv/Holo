@@ -1,0 +1,12 @@
+[submodule "dependencies/glfw"]
+	path = dependencies/glfw
+	url = https://github.com/glfw/glfw
+[submodule "dependencies/glm"]
+	path = dependencies/glm
+	url = https://github.com/g-truc/glm
+[submodule "dependencies/glew"]
+	path = dependencies/glew
+	url = https://github.com/Perlmint/glew-cmake
+[submodule "dependencies/SOIL"]
+	path = dependencies/SOIL
+	url = https://github.com/kbranigan/Simple-OpenGL-Image-Library

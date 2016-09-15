@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
-#include <SOIL/SOIL.h>
+#include <SOIL.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -27,7 +27,7 @@
 int obj_length;
 float xAngle = 0.0f;
 float yAngle = 0.0f;
-float radius = 3.0f;
+float radius = 1.5f;
 
 GLuint obj_vao, obj_vbo;
 GLuint blankShaderProgram;
