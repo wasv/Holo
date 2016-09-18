@@ -25,4 +25,4 @@ configure_file("bb8.obj" "Debug/bb8.obj" COPYONLY)
 configure_file("CSH.obj" "Debug/CSH.obj" COPYONLY)
 
 add_executable(holo main.cpp)
-target_link_libraries(holo glfw ${OPENGL_LIBRARY} libglew32d SOIL)
+target_link_libraries(holo glfw ${OPENGL_LIBRARY} GLEW SOIL)
