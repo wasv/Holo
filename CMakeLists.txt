@@ -6,7 +6,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(DEP_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 set(DEP_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/dependencies")
 
-set(GLEW_LIBRARY "libglew32d")
+
+if(${UNIX})
+    set(GLEW_LIBRARY "glew")
+else(${UNIX})
+    set(GLEW_LIBRARY "libglew32d")
+endif(${UNIX})
 set(SOIL_LIBRARY "SOIL")
 set(GLFW_LIBRARY "glfw")
 
