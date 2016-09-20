@@ -8,4 +8,20 @@ I've seen a lot of tutorials online about how to make a phone sized reflective p
  * Normalizes the size of an object to properly fit on the screen.
  * Adjustable distance and rotation.
 
+## Building with Windows (using git bash)
+### Dependencies
+* [Visual Studio](https://www.visualstudio.com/) (Only tested with 2015 x64)
+* [Git Bash](https://git-scm.com/downloads)
+* [cmake](https://cmake.org/)
+```bash
+git clone https://github.com/wastevensv/Holo
+git submodule update --init
+mkdir build
+cd build
+cmake .. # May need to specify generator with -G option. Currently only "Visual Studio 14 2015 Win64" is known working.
+# Then open generated Holo.sln file and build in Visual Studio.
+cd Debug
+./holo ../objs/bb8.obj
+```
+
 ![Screenshot](http://www.wastevensv.com/projects/holo/holo_screenshot.png)
