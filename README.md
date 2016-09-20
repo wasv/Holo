@@ -15,6 +15,7 @@ I've seen a lot of tutorials online about how to make a phone sized reflective p
 * [cmake](https://cmake.org/)
 ```bash
 git clone https://github.com/wastevensv/Holo
+cd Holo
 git submodule update --init
 mkdir build
 cd build
@@ -22,6 +23,19 @@ cmake .. # May need to specify generator with -G option. Currently only "Visual 
 # Then open generated Holo.sln file and build in Visual Studio.
 cd Debug
 ./holo ../objs/bb8.obj
+```
+
+## Building with Linux
+```bash
+sudo apt install cmake mesa-utils libgl1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libglu1-mesa-dev # For ubuntu. Adjust package names as needed.
+git clone https://github.com/wastevensv/Holo
+cd Holo
+git submodule update --init
+mkdir build
+cd build
+cmake ..
+make
+./holo objs/bb8.obj
 ```
 
 ![Screenshot](http://www.wastevensv.com/projects/holo/holo_screenshot.png)
