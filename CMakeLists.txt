@@ -19,10 +19,6 @@ find_package( OpenGL REQUIRED )
 
 add_subdirectory("${DEP_SOURCE_DIR}")
 
-#add_subdirectory("${DEP_ROOT_DIR}/glew/build/cmake" "${CMAKE_BINARY_DIR}/lib/glew")
-#add_subdirectory("${DEP_ROOT_DIR}/glfw" "${CMAKE_BINARY_DIR}/lib/glfw")
-#add_subdirectory("${DEP_ROOT_DIR}/SOIL" "${CMAKE_BINARY_DIR}/lib/SOIL")
-
 add_definitions(-DGLEW_STATIC)
 
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/lib")
