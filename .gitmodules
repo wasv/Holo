@@ -10,3 +10,6 @@
 [submodule "dependencies/SOIL"]
 	path = dependencies/SOIL
 	url = https://github.com/kbranigan/Simple-OpenGL-Image-Library
+[submodule "web"]
+	path = web
+	url = github.com:wastevensv/holo-web
